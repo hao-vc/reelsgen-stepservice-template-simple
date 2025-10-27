@@ -1,0 +1,121 @@
+---
+description: Logging Metadata to Langfuse
+alwaysApply: false
+---
+# Logging Metadata to Langfuse
+OpenAI v1.0.0+
+Set extra_body={"metadata": { }} to metadata you want to pass
+
+import openai
+client = openai.OpenAI(
+    api_key="anything",
+    base_url="https://proxy.merkulov.ai"
+)
+
+# request sent to model set on litellm proxy, `litellm --model`
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages = [
+        {
+            "role": "user",
+            "content": "this is a test request, write a short poem"
+        }
+    ],
+    extra_body={
+        "metadata": {
+            "generation_name": "ishaan-generation-openai-client",
+            "generation_id": "openai-client-gen-id22",
+            "trace_id": "openai-client-trace-id22",
+            "trace_user_id": "openai-client-user-id2"
+        }
+    }
+)
+
+print(response)
+
+# Custom Tags
+Set tags as part of your request body
+
+OpenAI Python v1.0.0+
+
+import openai
+client = openai.OpenAI(
+    api_key="sk-1234",
+    base_url="http://0.0.0.0:4000"
+)
+
+response = client.chat.completions.create(
+    model="llama3",
+    messages = [
+        {
+            "role": "user",
+            "content": "this is a test request, write a short poem"
+        }
+    ],
+    user="palantir",
+    extra_body={
+        "metadata": {
+            "tags": ["jobID:214590dsff09fds", "taskName:run_page_classification"] # use here request_id, operation_id, lang, topic
+        }
+    }
+)
+
+print(response)# Logging Metadata to Langfuse
+OpenAI v1.0.0+
+Set extra_body={"metadata": { }} to metadata you want to pass
+
+import openai
+client = openai.OpenAI(
+    api_key="anything",
+    base_url="http://0.0.0.0:4000"
+)
+
+# request sent to model set on litellm proxy, `litellm --model`
+response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages = [
+        {
+            "role": "user",
+            "content": "this is a test request, write a short poem"
+        }
+    ],
+    extra_body={
+        "metadata": {
+            "generation_name": "ishaan-generation-openai-client",
+            "generation_id": "openai-client-gen-id22",
+            "trace_id": "openai-client-trace-id22",
+            "trace_user_id": "openai-client-user-id2"
+        }
+    }
+)
+
+print(response)
+
+# Custom Tags
+Set tags as part of your request body
+
+OpenAI Python v1.0.0+
+
+import openai
+client = openai.OpenAI(
+    api_key="sk-1234",
+    base_url="https://proxy.merkulov.ai"
+)
+
+response = client.chat.completions.create(
+    model="llama3",
+    messages = [
+        {
+            "role": "user",
+            "content": "this is a test request, write a short poem"
+        }
+    ],
+    user="palantir",
+    extra_body={
+        "metadata": {
+            "tags": ["jobID:214590dsff09fds", "taskName:run_page_classification"] # use here request_id, operation_id, lang, topic
+        }
+    }
+)
+
+print(response)

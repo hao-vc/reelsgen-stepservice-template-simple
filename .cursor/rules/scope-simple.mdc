@@ -1,0 +1,449 @@
+---
+alwaysApply: true
+---
+# Scope: Simple FastAPI Template for Juniors
+
+## Обзор проекта
+
+Создание простого шаблона FastAPI микросервиса для начинающих разработчиков. Этот шаблон фокусируется на основах FastAPI без сложных компонентов, таких как очереди задач, внешние базы данных и контейнеризация. Идеально подходит для изучения основ веб-разработки и создания простых API сервисов.
+
+## Основные требования
+
+### 1. Health Check Endpoint
+- **Endpoint**: `GET /health`
+- **Функциональность**: Проверка состояния сервиса
+- **Ответ**: Статус сервиса, версия, время работы
+
+### 2. Структурированное логирование
+- **Формат**: JSON-логи для локальной разработки
+- **Метки**: `service`, `endpoint`
+- **Вывод**: stdout
+- **Уровни**: INFO, WARNING, ERROR, DEBUG
+- **Простота**: Минимальная настройка без внешних систем
+
+### 3. Аутентификация запросов
+- **Тип**: Bearer Token в заголовке `Authorization`
+- **Проверка**: Валидация токена для всех защищенных эндпоинтов
+- **Исключения**: `/health` endpoint
+- **Токены**: Два токена в `.env`:
+  - `AUTH_TOKEN` - для авторизации входящих запросов
+  - `WEBHOOK_AUTH_TOKEN` - для авторизации webhook запросов и ответов
+
+### 4. Простая Webhook система
+- **Обязательный параметр**: `webhook_url` в каждом запросе
+- **Процесс**:
+  1. Немедленный ответ `204 No Content` с `X-Operation-ID`
+  2. Синхронная обработка задачи
+  3. Отправка результата на `webhook_url`
+- **Аутентификация webhook**: Токен `WEBHOOK_AUTH_TOKEN` из `.env` в заголовке `Authorization: Bearer <token>`
+- **Схема ответа**: Стандартизированный формат с UUID операции
+
+### 5. Идентификация и метаданные
+- **Имя сервиса**: Настраиваемое поле в env `service_name`
+- **UUID операций**: Уникальный внутренний идентификатор operation_id для каждой задачи
+- **Версионирование**: Поддержка версий API
+
+### 6. Stateless архитектура
+- **Принцип**: Полностью stateless микросервис без постоянного хранения данных
+- **Обработка**: Каждый запрос обрабатывается независимо
+- **Память**: Никакого состояния между запросами
+- **Простота**: Максимальная простота для начинающих разработчиков
+
+### 7. Система алертов для ошибок
+- **Триггеры**: HTTP ошибки 400/500, исключения в обработчиках
+- **Интеграция**: Supabase Edge Function для отправки уведомлений
+- **Формат алерта**:
+  ```json
+  {
+    "text": "Описание ошибки",
+    "priority": "high",
+    "timestamp": "2025-01-14T12:00:00Z",
+    "tags": ["incident", "critical", "service_name"],
+    "debug_logs": "Дополнительная информация об ошибке"
+  }
+  ```
+- **Конфигурация**: URL и API ключ через переменные окружения
+- **Логирование**: Все алерты также записываются в структурированные логи
+
+### 8. Схемы для работы с внешними сервисами (Step)
+- **Философия гибкости**: Максимальное количество опциональных параметров в `StepCallInitial.input` для максимальной гибкости микросервиса
+- **Возвращаемые типы**: Запрос может возвращать `StepResult` (промежуточный) или `FinalStepResult` (финальный)
+
+### 9. Пример простого действия в шаблоне
+- **Назначение**: Демонстрация работы простого FastAPI API
+- **Пример действия**: Простая обработка текста (например, подсчет слов, перевод в верхний регистр)
+- **FastAPI endpoint**: Принимает запрос, обрабатывает синхронно, отправляет webhook
+- **Цель**: Показать полный цикл работы микросервиса на простом примере
+- **Гибкость**: Пример демонстрирует максимальную гибкость параметров в `input`
+
+### 10. Система тестирования (поздняя стадия)
+- **Назначение**: Обеспечение надежности и качества кода
+- **Типы тестов**:
+  - Unit тесты для сервисов и утилит
+  - Integration тесты для API endpoints
+- **Фреймворк**: pytest
+- **Покрытие**: Базовое покрытие критических компонентов
+
+### 11. Система бенчмаркинга (поздняя стадия)
+- **Расположение**: Отдельная папка `benchmark/`
+- **Назначение**: Проверка различных кейсов использования микросервиса (5-10 тест-кейсов)
+- **Скрипт**: Python-скрипт для запуска набора тестовых сценариев
+- **Функциональность**:
+  - Запуск предопределенных тестовых кейсов с разными параметрами
+  - Отправка запросов на endpoint с различными входными данными
+  - Отображение результатов каждого кейса (статус, время ответа, результат)
+  - Сохранение результатов всех кейсов в файл (JSON/CSV)
+- **Библиотеки**: requests для HTTP запросов, rich для красивого вывода
+
+## Технический стек
+
+### Основные технологии
+- **Python**: 3.12
+- **Web Framework**: FastAPI
+- **Package Manager**: uv
+- **Storage**: Stateless (без постоянного хранения)
+- **Deployment**: Vercel (serverless)
+
+### Дополнительные библиотеки
+- **Logging**: structlog для структурированных логов
+- **HTTP Client**: httpx для webhook запросов
+- **Environment**: python-dotenv
+- **Validation**: Pydantic v2
+- **Testing**: pytest (поздняя стадия)
+- **Benchmarking**: requests, rich (поздняя стадия)
+
+## Архитектура
+
+### Схемы объектов
+[text](schemas.py)
+
+### Структура проекта
+```
+├── app/
+│   ├── __init__.py
+│   ├── main.py                 # FastAPI приложение
+│   ├── config.py               # Конфигурация
+│   ├── auth.py                 # Аутентификация
+│   ├── logging_config.py       # Настройка логирования
+│   ├── schemas/                # Pydantic схемы
+│   │   ├── __init__.py
+│   │   ├── health.py
+│   │   ├── operations.py
+│   │   └── step_schemas.py     # Step схемы для внешних сервисов
+│   ├── api/                    # API роуты
+│   │   ├── __init__.py
+│   │   ├── health.py
+│   │   ├── operations.py
+│   │   └── example.py          # Пример простого действия
+│   └── services/               # Бизнес-логика
+│       ├── __init__.py
+│       ├── operation_service.py
+│       ├── webhook_service.py
+│       └── alert_service.py    # Сервис отправки алертов
+├── tests/                      # Тесты (поздняя стадия)
+│   ├── __init__.py
+│   ├── conftest.py             # Pytest конфигурация и фикстуры
+│   └── unit/                   # Unit тесты
+│       └── test_services.py
+├── benchmark/                  # Бенчмаркинг (поздняя стадия)
+│   ├── __init__.py
+│   ├── benchmark.py            # Основной скрипт бенчмаркинга
+│   ├── test_cases.yaml         # Набор тест-кейсов для проверки
+│   └── results/                # Результаты бенчмарков
+├── vercel.json                 # Конфигурация для Vercel
+├── pyproject.toml
+├── .env.example
+└── README.md
+```
+
+### Конфигурация (.env)
+```env
+# Service Configuration
+SERVICE_NAME=my-service
+SERVICE_VERSION=1.0.0
+DEBUG=false
+
+# Authentication
+AUTH_TOKEN=your-auth-token                    # Токен для авторизации входящих запросов
+WEBHOOK_AUTH_TOKEN=your-webhook-auth-token     # Токен для авторизации webhook запросов и ответов
+
+# Alerting System
+ALERT_WEBHOOK_URL=https://myiyvbvhsqexhicfmnsz.supabase.co/functions/v1/send-notification
+ALERT_API_KEY=8b1738...
+
+# Logging
+LOG_LEVEL=INFO
+LOG_FORMAT=json                                  # Формат логов (json для структурированного вывода)
+```
+
+### Валидация конфигурации
+- **Библиотека**: Pydantic Settings для валидации переменных окружения
+- **Проверка**: Обязательные поля, типы данных, форматы URL и токенов
+- **Ошибки**: Детальные сообщения об ошибках при некорректной конфигурации
+
+## API Endpoints
+
+### Health Check
+```http
+GET /health
+```
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "service_name": "my-service",
+  "version": "1.0.0",
+  "uptime": "2h 30m 15s",
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+### Operation Endpoint (пример)
+```http
+POST /operations/process
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "webhook_url": "https://client.com/webhook",
+  "data": {
+    "input": "some data"
+  }
+}
+```
+
+**Response:**
+```http
+HTTP/1.1 204 No Content
+X-Operation-ID: 550e8400-e29b-41d4-a716-446655440000
+```
+
+### Step Endpoints (для внешних сервисов)
+```http
+POST /step/call
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "step": {
+    "id": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  "webhook": {
+    "url": "https://external-service.com/webhook"
+  },
+  "initial": {
+    "input": {
+      "video_url": "https://example.com/video.mp4",
+      "duration": 120
+    }
+  },
+  "variables": {
+    "quality": "1080p",
+    "format": "mp4"
+  }
+}
+```
+
+**Step Result Response:**
+```http
+HTTP/1.1 204 No Content
+X-Operation-ID: 550e8400-e29b-41d4-a716-446655440000
+```
+
+### Example Endpoint (простое действие)
+```http
+POST /example/process-text
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "webhook": {
+    "url": "https://client.com/webhook"
+  },
+  "initial": {
+    "input": {
+      "text": "Hello World",
+      "operation": "uppercase",
+      "language": "en",
+      "format": "plain",
+      "metadata": {
+        "source": "api",
+        "version": "1.0"
+      }
+    }
+  },
+  "variables": {
+    "timeout": 30,
+    "retry_count": 3
+  }
+}
+```
+
+**Example Response:**
+```http
+HTTP/1.1 204 No Content
+X-Operation-ID: 550e8400-e29b-41d4-a716-446655440000
+```
+
+### Webhook Payloads (StepResult/FinalStepResult)
+
+**Step Result Webhook Payload:**
+```json
+{
+  "step": {
+    "id": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  "operation": {
+    "operation_id": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  "variables": {
+    "quality": "1080p",
+    "format": "mp4"
+  },
+  "outputs": [
+    {
+      "data": {
+        "processed_video_url": "https://processed.com/video.mp4",
+        "thumbnail_url": "https://processed.com/thumb.jpg"
+      }
+    }
+  ]
+}
+```
+
+**Final Step Result Webhook Payload:**
+```json
+{
+  "step": {
+    "id": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  "operation": {
+    "operation_id": "550e8400-e29b-41d4-a716-446655440000"
+  },
+  "videos": [
+    {
+      "url": "https://example.com/final-video.mp4",
+      "thumbnail": {
+        "url": "https://example.com/thumbnail.jpg"
+      },
+      "channel": {
+        "id": "550e8400-e29b-41d4-a716-446655440001"
+      },
+      "description": "Final processed video"
+    }
+  ]
+}
+```
+
+## Логирование
+
+### Формат логов
+```json
+{
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "level": "INFO",
+  "service": "my-service",
+  "endpoint": "/operations/process",
+  "operation_id": "550e8400-e29b-41d4-a716-446655440000",
+  "message": "Operation started",
+  "extra": {
+    "user_id": "user123",
+    "request_id": "req-456"
+  }
+}
+```
+
+### Логируемые события
+- Запуск/остановка сервиса
+- Входящие запросы
+- Начало/завершение операций
+- Ошибки обработки (400/500)
+- Отправка алертов при ошибках
+- Webhook отправки
+
+## Развертывание на Vercel
+
+### Конфигурация Vercel (vercel.json)
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app/main.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app/main.py"
+    }
+  ]
+}
+```
+
+### Переменные окружения в Vercel
+- `SERVICE_NAME` - имя сервиса
+- `SERVICE_VERSION` - версия сервиса
+- `AUTH_TOKEN` - токен авторизации
+- `WEBHOOK_AUTH_TOKEN` - токен авторизации webhook
+- `ALERT_WEBHOOK_URL` - URL для алертов
+- `ALERT_API_KEY` - API ключ для алертов
+- `LOG_LEVEL` - уровень логирования
+- `LOG_FORMAT` - формат логов
+
+### Особенности Vercel
+- **Serverless**: Автоматическое масштабирование
+- **Cold Start**: Первый запрос может быть медленнее
+- **Timeout**: Максимум 10 секунд для выполнения функции
+- **Stateless**: Каждый запрос обрабатывается независимо
+- **Environment**: Переменные окружения настраиваются в Vercel Dashboard
+
+## Философия и расширяемость
+
+### Философия максимальной гибкости
+- **Опциональные параметры**: Максимальное количество опциональных параметров в `StepCallInitial.input`
+- **Расширяемость**: Легкое добавление новых полей без breaking changes
+- **Обратная совместимость**: Старые клиенты продолжают работать при добавлении новых параметров
+- **Универсальность**: Один микросервис может обрабатывать различные типы задач
+
+### Примеры гибкости параметров
+Example json:
+```json
+{
+  "initial": {
+    "input": {
+      // Обязательные параметры
+      "text": "Hello World",
+      
+      // Опциональные параметры для максимальной гибкости
+      "operation": "uppercase",           // uppercase, lowercase, reverse, etc.
+      "language": "en",                   // en, ru, es, etc.
+      "format": "plain",                  // plain, html, markdown, etc.
+      "encoding": "utf-8",                // utf-8, ascii, etc.
+      "max_length": 1000,                 // ограничение длины
+      "preserve_spaces": true,            // сохранять пробелы
+      "remove_punctuation": false,        // удалять пунктуацию
+      "add_timestamp": true,              // добавлять временную метку
+      "custom_delimiter": " ",            // пользовательский разделитель
+      "metadata": {                       // произвольные метаданные
+        "source": "api",
+        "version": "1.0",
+        "user_id": "12345"
+      }
+    }
+  }
+}
+```
+
+### Расширяемость шаблона
+Шаблон должен легко расширяться для:
+- Добавления новых типов операций
+- Интеграции с внешними API
+- Добавления новых эндпоинтов
+- Настройки различных типов аутентификации
+- Интеграции с различными базами данных
+- Добавления middleware для логирования/мониторинга
+- Добавления новых опциональных параметров без breaking changes
+
