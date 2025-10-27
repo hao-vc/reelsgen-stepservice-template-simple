@@ -20,7 +20,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.panel import Panel
 from rich.text import Text
 
-from benchmark.test_cases import get_all_test_cases, get_test_cases_by_category
+from test_cases import get_all_test_cases, get_test_cases_by_category
 
 
 @dataclass

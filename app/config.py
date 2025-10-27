@@ -2,8 +2,8 @@
 
 from typing import Optional
 
-from pydantic import Field, HttpUrl, validator
-from pydantic_settings import BaseSettings
+from pydantic import Field, HttpUrl, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -32,7 +32,8 @@ class Settings(BaseSettings):
     log_level: str = Field(default="INFO", description="Logging level")
     log_format: str = Field(default="json", description="Log format (json or console)")
     
-    @validator("log_level")
+    @field_validator("log_level")
+    @classmethod
     def validate_log_level(cls, v: str) -> str:
         """Validate log level."""
         valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -40,7 +41,8 @@ class Settings(BaseSettings):
             raise ValueError(f"log_level must be one of {valid_levels}")
         return v.upper()
     
-    @validator("log_format")
+    @field_validator("log_format")
+    @classmethod
     def validate_log_format(cls, v: str) -> str:
         """Validate log format."""
         valid_formats = ["json", "console"]
@@ -48,25 +50,27 @@ class Settings(BaseSettings):
             raise ValueError(f"log_format must be one of {valid_formats}")
         return v.lower()
     
-    @validator("auth_token")
+    @field_validator("auth_token")
+    @classmethod
     def validate_auth_token(cls, v: str) -> str:
         """Validate auth token is not empty."""
         if not v or len(v.strip()) == 0:
             raise ValueError("auth_token cannot be empty")
         return v.strip()
     
-    @validator("webhook_auth_token")
+    @field_validator("webhook_auth_token")
+    @classmethod
     def validate_webhook_auth_token(cls, v: str) -> str:
         """Validate webhook auth token is not empty."""
         if not v or len(v.strip()) == 0:
             raise ValueError("webhook_auth_token cannot be empty")
         return v.strip()
     
-    class Config:
-        """Pydantic configuration."""
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+    )
 
 
 # Global settings instance

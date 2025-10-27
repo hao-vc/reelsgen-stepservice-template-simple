@@ -1,7 +1,7 @@
 """Operation service for handling business logic."""
 
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 from uuid import UUID, uuid4
 
@@ -41,7 +41,7 @@ class OperationService:
             # Process the data (example: simple echo with timestamp)
             result = {
                 "processed_data": data,
-                "processed_at": datetime.utcnow().isoformat() + "Z",
+                "processed_at": datetime.now(timezone.utc).isoformat() + "Z",
                 "operation_id": str(operation_id),
             }
             
@@ -52,7 +52,7 @@ class OperationService:
                     operation_id=operation_id,
                     status="completed",
                     result=result,
-                    timestamp=datetime.utcnow().isoformat() + "Z",
+                    timestamp=datetime.now(timezone.utc).isoformat() + "Z",
                 ),
             )
             
@@ -77,7 +77,7 @@ class OperationService:
                         operation_id=operation_id,
                         status="failed",
                         error=str(e),
-                        timestamp=datetime.utcnow().isoformat() + "Z",
+                        timestamp=datetime.now(timezone.utc).isoformat() + "Z",
                     ),
                 )
             except Exception as webhook_error:

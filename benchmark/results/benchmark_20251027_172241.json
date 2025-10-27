@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-10-27T17:22:41.588606",
+  "base_url": "http://localhost:8000",
+  "summary": {
+    "total_tests": 1,
+    "successful_tests": 0,
+    "failed_tests": 1,
+    "average_response_time": 3.213148832321167,
+    "min_response_time": 3.213148832321167,
+    "max_response_time": 3.213148832321167,
+    "total_time": 3.213148832321167
+  },
+  "results": [
+    {
+      "name": "Health Check",
+      "endpoint": "/health",
+      "method": "GET",
+      "status_code": 0,
+      "expected_status": 200,
+      "response_time": 3.213148832321167,
+      "success": false,
+      "error_message": "All connection attempts failed",
+      "response_size": null
+    }
+  ]
+}

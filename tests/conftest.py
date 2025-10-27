@@ -27,7 +27,7 @@ from main import app
 @pytest.fixture
 def client() -> Generator[TestClient, None, None]:
     """Create a test client for FastAPI app."""
-    with TestClient(app) as test_client:
+    with TestClient(app, raise_server_exceptions=False) as test_client:
         yield test_client
 
 
@@ -87,6 +87,9 @@ def sample_step_call_data() -> dict:
 def sample_example_data() -> dict:
     """Return sample example data for testing."""
     return {
+        "step": {
+            "id": "550e8400-e29b-41d4-a716-446655440000"
+        },
         "webhook": {
             "url": "https://test.example.com/webhook"
         },
@@ -108,8 +111,8 @@ def sample_example_data() -> dict:
 @pytest.fixture
 def mock_webhook_response():
     """Mock webhook response for testing."""
-    with patch('app.services.webhook_service.send_webhook') as mock:
-        mock.return_value = {"status": "success", "response_code": 200}
+    with patch('app.services.webhook_service.WebhookService.send_webhook') as mock:
+        mock.return_value = None  # send_webhook is async and returns None
         yield mock
 
 

@@ -1,0 +1,202 @@
+{
+  "timestamp": "2025-10-27T17:24:00.297675",
+  "base_url": "http://localhost:8000",
+  "summary": {
+    "total_tests": 17,
+    "successful_tests": 1,
+    "failed_tests": 16,
+    "average_response_time": 0.7865564682904411,
+    "min_response_time": 0.5652086734771729,
+    "max_response_time": 1.7704017162322998,
+    "total_time": 13.3714599609375
+  },
+  "results": [
+    {
+      "name": "Health Check",
+      "endpoint": "/health",
+      "method": "GET",
+      "status_code": 200,
+      "expected_status": 200,
+      "response_time": 1.0516343116760254,
+      "success": true,
+      "error_message": null,
+      "response_size": 129
+    },
+    {
+      "name": "Operations Process - Basic",
+      "endpoint": "/operations/process",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 1.042576551437378,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Operations Process - Complex Data",
+      "endpoint": "/operations/process",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 1.7704017162322998,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Step Call - Video Processing",
+      "endpoint": "/step/call",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 1.2641987800598145,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Step Call - Audio Processing",
+      "endpoint": "/step/call",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 0.738182783126831,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Example Process Text - Uppercase",
+      "endpoint": "/example/process-text",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 0.6921737194061279,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Example Process Text - Lowercase",
+      "endpoint": "/example/process-text",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 0.6904466152191162,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Example Process Text - Reverse",
+      "endpoint": "/example/process-text",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 0.6155433654785156,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Example Process Text - Complex",
+      "endpoint": "/example/process-text",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 0.6269385814666748,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Operations Process - No Auth",
+      "endpoint": "/operations/process",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 401,
+      "response_time": 0.5652086734771729,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Operations Process - Invalid Auth",
+      "endpoint": "/operations/process",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 401,
+      "response_time": 0.5793635845184326,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Operations Process - Missing Webhook",
+      "endpoint": "/operations/process",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 422,
+      "response_time": 0.6088707447052002,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Example Process Text - Missing Text",
+      "endpoint": "/example/process-text",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 422,
+      "response_time": 0.6001629829406738,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Non-existent Endpoint",
+      "endpoint": "/non-existent",
+      "method": "GET",
+      "status_code": 500,
+      "expected_status": 404,
+      "response_time": 0.6165580749511719,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Performance Test - Large Text",
+      "endpoint": "/example/process-text",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 0.6593208312988281,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Edge Case - Empty Text",
+      "endpoint": "/example/process-text",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 0.6125671863555908,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    },
+    {
+      "name": "Edge Case - Special Characters Only",
+      "endpoint": "/example/process-text",
+      "method": "POST",
+      "status_code": 500,
+      "expected_status": 204,
+      "response_time": 0.6373114585876465,
+      "success": false,
+      "error_message": null,
+      "response_size": 62
+    }
+  ]
+}

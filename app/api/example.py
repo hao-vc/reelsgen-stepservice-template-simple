@@ -78,8 +78,8 @@ class TextProcessingService:
             
             # Add timestamp if requested
             if add_timestamp:
-                from datetime import datetime
-                timestamp = datetime.utcnow().isoformat() + "Z"
+                from datetime import datetime, timezone
+                timestamp = datetime.now(timezone.utc).isoformat() + "Z"
                 processed_text = f"[{timestamp}] {processed_text}"
             
             # Prepare result

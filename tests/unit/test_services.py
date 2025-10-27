@@ -2,8 +2,9 @@
 Unit tests for services.
 """
 import pytest
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, AsyncMock
 import httpx
+from uuid import UUID
 from app.services.operation_service import OperationService
 from app.services.webhook_service import WebhookService
 from app.services.alert_service import AlertService
@@ -12,19 +13,27 @@ from app.services.alert_service import AlertService
 class TestOperationService:
     """Test cases for OperationService."""
     
-    def test_generate_operation_id(self):
+    @pytest.fixture
+    def mock_webhook_service(self):
+        """Create mock webhook service."""
+        return AsyncMock(spec=WebhookService)
+    
+    @pytest.fixture
+    def operation_service(self, mock_webhook_service):
+        """Create OperationService instance."""
+        return OperationService(mock_webhook_service)
+    
+    def test_generate_operation_id(self, operation_service):
         """Test operation ID generation."""
-        service = OperationService()
-        operation_id = service.generate_operation_id()
+        operation_id = operation_service.generate_operation_id()
         
         assert operation_id is not None
-        assert isinstance(operation_id, str)
-        assert len(operation_id) == 36  # UUID length
+        assert isinstance(operation_id, UUID)
+        assert len(str(operation_id)) == 36  # UUID length
     
-    def test_generate_operation_id_unique(self):
+    def test_generate_operation_id_unique(self, operation_service):
         """Test that operation IDs are unique."""
-        service = OperationService()
-        ids = [service.generate_operation_id() for _ in range(100)]
+        ids = [operation_service.generate_operation_id() for _ in range(100)]
         
         assert len(set(ids)) == 100  # All IDs should be unique
 
@@ -40,54 +49,81 @@ class TestWebhookService:
     @pytest.mark.asyncio
     async def test_send_webhook_success(self, webhook_service):
         """Test successful webhook sending."""
-        with patch('httpx.AsyncClient.post') as mock_post:
+        from app.schemas.operations import WebhookPayload
+        from uuid import uuid4
+        
+        with patch.object(webhook_service.client, 'post') as mock_post:
             mock_response = Mock()
             mock_response.status_code = 200
-            mock_response.json.return_value = {"status": "success"}
+            mock_response.raise_for_status.return_value = None
             mock_post.return_value = mock_response
             
-            result = await webhook_service.send_webhook(
-                url="https://test.example.com/webhook",
-                data={"test": "data"},
-                auth_token="test-token"
+            operation_id = uuid4()
+            payload = WebhookPayload(
+                operation_id=operation_id,
+                status="completed",
+                result={"test": "data"},
+                timestamp="2024-01-15T10:30:00Z"
             )
             
-            assert result["status"] == "success"
-            assert result["response_code"] == 200
+            await webhook_service.send_webhook(
+                webhook_url="https://test.example.com/webhook",
+                payload=payload
+            )
+            
             mock_post.assert_called_once()
     
     @pytest.mark.asyncio
     async def test_send_webhook_failure(self, webhook_service):
         """Test webhook sending failure."""
-        with patch('httpx.AsyncClient.post') as mock_post:
+        from app.schemas.operations import WebhookPayload
+        from uuid import uuid4
+        
+        with patch.object(webhook_service.client, 'post') as mock_post:
             mock_post.side_effect = httpx.RequestError("Connection failed")
             
-            result = await webhook_service.send_webhook(
-                url="https://test.example.com/webhook",
-                data={"test": "data"},
-                auth_token="test-token"
+            operation_id = uuid4()
+            payload = WebhookPayload(
+                operation_id=operation_id,
+                status="completed",
+                result={"test": "data"},
+                timestamp="2024-01-15T10:30:00Z"
             )
             
-            assert result["status"] == "error"
-            assert "error" in result
+            with pytest.raises(httpx.RequestError):
+                await webhook_service.send_webhook(
+                    webhook_url="https://test.example.com/webhook",
+                    payload=payload
+                )
     
     @pytest.mark.asyncio
     async def test_send_webhook_http_error(self, webhook_service):
         """Test webhook sending with HTTP error."""
-        with patch('httpx.AsyncClient.post') as mock_post:
+        from app.schemas.operations import WebhookPayload
+        from uuid import uuid4
+        
+        with patch.object(webhook_service.client, 'post') as mock_post:
             mock_response = Mock()
             mock_response.status_code = 500
             mock_response.text = "Internal Server Error"
+            mock_response.raise_for_status.side_effect = httpx.HTTPStatusError(
+                "Server Error", request=Mock(), response=mock_response
+            )
             mock_post.return_value = mock_response
             
-            result = await webhook_service.send_webhook(
-                url="https://test.example.com/webhook",
-                data={"test": "data"},
-                auth_token="test-token"
+            operation_id = uuid4()
+            payload = WebhookPayload(
+                operation_id=operation_id,
+                status="completed",
+                result={"test": "data"},
+                timestamp="2024-01-15T10:30:00Z"
             )
             
-            assert result["status"] == "error"
-            assert result["response_code"] == 500
+            with pytest.raises(httpx.HTTPStatusError):
+                await webhook_service.send_webhook(
+                    webhook_url="https://test.example.com/webhook",
+                    payload=payload
+                )
 
 
 class TestAlertService:
@@ -101,47 +137,54 @@ class TestAlertService:
     @pytest.mark.asyncio
     async def test_send_alert_success(self, alert_service):
         """Test successful alert sending."""
-        with patch('httpx.AsyncClient.post') as mock_post:
+        with patch.object(alert_service.client, 'post') as mock_post:
             mock_response = Mock()
             mock_response.status_code = 200
-            mock_response.json.return_value = {"status": "success"}
+            mock_response.raise_for_status.return_value = None
             mock_post.return_value = mock_response
             
-            result = await alert_service.send_alert(
+            await alert_service.send_alert(
                 text="Test alert",
                 priority="high",
                 tags=["test", "error"]
             )
             
-            assert result["status"] == "success"
             mock_post.assert_called_once()
     
     @pytest.mark.asyncio
     async def test_send_alert_failure(self, alert_service):
         """Test alert sending failure."""
-        with patch('httpx.AsyncClient.post') as mock_post:
+        with patch.object(alert_service.client, 'post') as mock_post:
             mock_post.side_effect = httpx.RequestError("Connection failed")
             
-            result = await alert_service.send_alert(
+            # Alert service should not raise exceptions
+            await alert_service.send_alert(
                 text="Test alert",
                 priority="high",
                 tags=["test", "error"]
             )
             
-            assert result["status"] == "error"
-            assert "error" in result
+            mock_post.assert_called_once()
     
-    def test_format_alert_data(self, alert_service):
-        """Test alert data formatting."""
-        alert_data = alert_service._format_alert_data(
-            text="Test error",
-            priority="high",
-            tags=["test", "error"],
-            debug_logs="Debug information"
-        )
-        
-        assert alert_data["text"] == "Test error"
-        assert alert_data["priority"] == "high"
-        assert alert_data["tags"] == ["test", "error"]
-        assert alert_data["debug_logs"] == "Debug information"
-        assert "timestamp" in alert_data
+    @pytest.mark.asyncio
+    async def test_send_alert_skipped_when_not_configured(self, alert_service):
+        """Test that alerts are skipped when not configured."""
+        with patch('app.config.settings') as mock_settings:
+            mock_settings.alert_webhook_url = None
+            mock_settings.alert_api_key = None
+            
+            # Mock the actual settings used in the service
+            original_settings = alert_service.__class__.__module__ + '.settings'
+            with patch(original_settings) as mock_service_settings:
+                mock_service_settings.alert_webhook_url = None
+                mock_service_settings.alert_api_key = None
+                
+                with patch.object(alert_service.client, 'post') as mock_post:
+                    await alert_service.send_alert(
+                        text="Test alert",
+                        priority="high",
+                        tags=["test", "error"]
+                    )
+                    
+                    # Should not call post when not configured
+                    mock_post.assert_not_called()

@@ -1,7 +1,7 @@
 """Health check API endpoint."""
 
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 from fastapi import APIRouter
 
@@ -13,12 +13,12 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 # Store service start time
-_start_time = datetime.utcnow()
+_start_time = datetime.now(timezone.utc)
 
 
 def format_uptime() -> str:
     """Format uptime in human readable format."""
-    uptime = datetime.utcnow() - _start_time
+    uptime = datetime.now(timezone.utc) - _start_time
     
     # Convert to total seconds
     total_seconds = int(uptime.total_seconds())
@@ -59,5 +59,5 @@ async def health_check() -> HealthResponse:
         service_name=settings.service_name,
         version=settings.service_version,
         uptime=format_uptime(),
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
     )

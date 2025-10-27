@@ -36,15 +36,23 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials) -> str:
     return "authenticated"
 
 
-def is_health_endpoint(request: Request) -> bool:
-    """Check if request is to health endpoint."""
-    return request.url.path == "/health"
+def is_public_endpoint(request: Request) -> bool:
+    """Check if request is to a public endpoint that doesn't require authentication."""
+    public_paths = {
+        "/health",
+        "/docs",
+        "/redoc", 
+        "/openapi.json",
+        "/favicon.ico",
+        "/",
+    }
+    return request.url.path in public_paths
 
 
 async def auth_middleware(request: Request, call_next):
     """Authentication middleware."""
-    # Skip authentication for health endpoint
-    if is_health_endpoint(request):
+    # Skip authentication for public endpoints
+    if is_public_endpoint(request):
         return await call_next(request)
     
     # Check for Authorization header

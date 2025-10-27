@@ -1,6 +1,6 @@
 """Alert service for sending error notifications."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 import httpx
@@ -61,7 +61,7 @@ class AlertService:
             payload = AlertPayload(
                 text=text,
                 priority=priority,
-                timestamp=datetime.utcnow().isoformat() + "Z",
+                timestamp=datetime.now(timezone.utc).isoformat() + "Z",
                 tags=alert_tags,
                 debug_logs=debug_logs,
             )

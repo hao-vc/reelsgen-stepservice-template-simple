@@ -58,10 +58,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Add authentication middleware
-app.middleware("http")(auth_middleware)
-
-# Add request logging middleware
+# Add request logging middleware (must be first)
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     """Log all requests."""
@@ -86,7 +83,11 @@ async def log_requests(request: Request, call_next):
         return response
     except Exception as e:
         logger.error("Request logging error", error=str(e))
-        return await call_next(request)
+        # Re-raise the exception to let FastAPI handle it properly
+        raise
+
+# Add authentication middleware
+app.middleware("http")(auth_middleware)
 
 
 # Global exception handler for validation errors

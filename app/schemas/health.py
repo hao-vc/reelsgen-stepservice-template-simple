@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class HealthResponse(BaseModel):
@@ -17,8 +17,8 @@ class HealthResponse(BaseModel):
     uptime: str = Field(description="Service uptime in human readable format")
     timestamp: datetime = Field(description="Current timestamp")
     
-    class Config:
-        """Pydantic configuration."""
-        json_encoders = {
+    model_config = ConfigDict(
+        json_encoders={
             datetime: lambda v: v.isoformat() + "Z"
         }
+    )
