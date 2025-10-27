@@ -1,53 +1,53 @@
-# Template для быстрого создания своих StepService's для проекта reelsgen
+# Шаблон для быстрого старта собственного StepService для проекта reelsgen
 
-## Features
+## Возможности
 
-- ✅ **Health Check Endpoint** - Service status monitoring
-- ✅ **Structured Logging** - JSON logs with service and endpoint labels
-- ✅ **Bearer Token Authentication** - Simple token-based auth
-- ✅ **Webhook System** - Asynchronous result delivery
-- ✅ **Alert System** - Error notifications via Supabase Edge Functions
-- ✅ **Step Schemas** - Flexible external service integration
-- ✅ **Example Endpoint** - Text processing demonstration
-- ✅ **Stateless Architecture** - No persistent state between requests
-- ✅ **Vercel Deployment** - Serverless deployment ready
+- ✅ **Endpoint проверки состояния (Health Check)** — мониторинг статуса сервиса
+- ✅ **Структурированное логирование** — JSON-логи с метками сервиса и endpoint'а
+- ✅ **Аутентификация через Bearer Token** — простая токен-авторизация
+- ✅ **Webhook-система** — асинхронная отправка результатов по указанному URL
+- ✅ **Система алертов** — уведомления об ошибках через Supabase Edge Functions
+- ✅ **Step-схемы** — гибкая интеграция с внешними сервисами
+- ✅ **Пример эндпоинта** — демонстрация обработки текста
+- ✅ **Stateless-архитектура** — отсутствие постоянного состояния между запросами
+- ✅ **Деплой на Vercel** — готово к serverless-развертыванию
 
-## Quick Start
+## Быстрый старт
 
-### 1. Install Dependencies
+### 1. Установка зависимостей
 
 ```bash
-# Install using uv (recommended)
+# Рекомендуется установка через uv
 uv sync
 ```
 
-### 2. Configure Environment
+### 2. Настройка окружения
 
-Create a `.env` file based on `.env.example`:
+Создайте файл `.env` на основе `.env.example`:
 
 ```env
-# Service Configuration
+# Конфигурация сервиса
 SERVICE_NAME=my-service
 SERVICE_VERSION=1.0.0
 DEBUG=false
 
-# Authentication
-AUTH_TOKEN=your-secure-token-here # токен для авторизации в данном сервисе
-WEBHOOK_AUTH_TOKEN=your-webhook-auth-token-here # токен для авторизации в ЕЛДЕ
+# Аутентификация
+AUTH_TOKEN=your-secure-token-here # токен для авторизации входящих запросов
+WEBHOOK_AUTH_TOKEN=your-webhook-auth-token-here # токен для авторизации при отправке webhook
 
-# Alerting System (Optional) # можно настроить алерт систему в https://tg-alerting-systems.lovable.app/
+# Система алертов (опционально) # можно настроить алерты через https://tg-alerting-systems.lovable.app/
 ALERT_WEBHOOK_URL=https://your-project.supabase.co/functions/v1/send-notification
 ALERT_API_KEY=your-supabase-api-key
 
-# Logging
+# Логирование
 LOG_LEVEL=INFO
 LOG_FORMAT=json
 ```
 
-### 3. Run the Service
+### 3. Запуск сервиса
 
 ```bash
-# Development mode
+# Запуск в режиме разработки
 python main.py
 ```
 
