@@ -1,6 +1,7 @@
 # Шаблон для быстрого старта собственного StepService для проекта reelsgen
 
-[text](GUIDE.md) - гайдик на шаблон
+[GUIDE](GUIDE.md) - гайдик на шаблон
+[AI-README](README-AI.md) - readme от клода
 
 ## Возможности
 
