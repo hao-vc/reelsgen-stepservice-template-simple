@@ -22,7 +22,6 @@ operation_service = OperationService(webhook_service)
 
 @router.post(
     "/operations/process",
-    status_code=status.HTTP_204_NO_CONTENT,
     summary="Process Operation",
     description="Process an operation and send result via webhook",
     tags=["Operations"],
@@ -32,6 +31,9 @@ async def process_operation(
     background_tasks: BackgroundTasks,
 ) -> Response:
     """Process an operation asynchronously."""
+    
+    # Model validation happens automatically by FastAPI before this function is called
+    # If validation fails, FastAPI will return 422 before reaching this point
     
     # Generate operation ID
     operation_id = operation_service.generate_operation_id()
@@ -60,7 +62,7 @@ async def process_operation(
     )
     
     # Return immediate response with operation ID
-    response = Response(status_code=status.HTTP_204_NO_CONTENT)
+    response = Response(status_code=status.HTTP_202_ACCEPTED)
     response.headers["X-Operation-ID"] = str(operation_id)
     
     return response

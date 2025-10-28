@@ -133,7 +133,7 @@ Content-Type: application/json
 
 **Response:**
 ```http
-HTTP/1.1 204 No Content
+HTTP/1.1 202 Accepted
 X-Operation-ID: 550e8400-e29b-41d4-a716-446655440000
 ```
 

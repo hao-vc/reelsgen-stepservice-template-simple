@@ -191,7 +191,6 @@ text_service = TextProcessingService(webhook_service)
 
 @router.post(
     "/example/process-text",
-    status_code=status.HTTP_204_NO_CONTENT,
     summary="Process Text",
     description="Process text with maximum flexibility - example endpoint",
     tags=["Example"],
@@ -201,6 +200,9 @@ async def process_text(
     background_tasks: BackgroundTasks,
 ) -> Response:
     """Process text with maximum flexibility."""
+    
+    # Model validation happens automatically by FastAPI before this function is called
+    # If validation fails, FastAPI will return 422 before reaching this point
     
     # Generate operation ID
     from uuid import uuid4
@@ -232,7 +234,7 @@ async def process_text(
     )
     
     # Return immediate response with operation ID
-    response = Response(status_code=status.HTTP_204_NO_CONTENT)
+    response = Response(status_code=status.HTTP_202_ACCEPTED)
     response.headers["X-Operation-ID"] = str(operation_id)
     
     return response

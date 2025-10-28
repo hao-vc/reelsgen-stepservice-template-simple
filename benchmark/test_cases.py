@@ -31,7 +31,7 @@ def get_test_cases() -> List[Dict[str, Any]]:
                     "input": "test data"
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test basic operation processing"
         },
         
@@ -52,7 +52,7 @@ def get_test_cases() -> List[Dict[str, Any]]:
                     }
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test operation processing with complex data"
         },
         
@@ -84,7 +84,7 @@ def get_test_cases() -> List[Dict[str, Any]]:
                     "retry_count": 3
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test step call for video processing"
         },
         
@@ -115,7 +115,7 @@ def get_test_cases() -> List[Dict[str, Any]]:
                     "sample_rate": 44100
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test step call for audio processing"
         },
         
@@ -144,7 +144,7 @@ def get_test_cases() -> List[Dict[str, Any]]:
                     "retry_count": 3
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test text processing - uppercase operation"
         },
         
@@ -172,7 +172,7 @@ def get_test_cases() -> List[Dict[str, Any]]:
                     "retry_count": 3
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test text processing - lowercase operation"
         },
         
@@ -200,7 +200,7 @@ def get_test_cases() -> List[Dict[str, Any]]:
                     "retry_count": 3
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test text processing - reverse operation"
         },
         
@@ -239,7 +239,7 @@ def get_test_cases() -> List[Dict[str, Any]]:
                     "retry_count": 5
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test text processing with all optional parameters"
         },
         
@@ -354,7 +354,7 @@ def get_custom_test_cases() -> List[Dict[str, Any]]:
                     "retry_count": 3
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test performance with large text input"
         },
         
@@ -383,7 +383,7 @@ def get_custom_test_cases() -> List[Dict[str, Any]]:
                     "retry_count": 3
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test edge case with empty text"
         },
         
@@ -411,7 +411,7 @@ def get_custom_test_cases() -> List[Dict[str, Any]]:
                     "retry_count": 3
                 }
             },
-            "expected_status": 204,
+            "expected_status": 202,
             "description": "Test edge case with special characters only"
         }
     ]

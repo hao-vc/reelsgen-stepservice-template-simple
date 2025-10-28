@@ -44,7 +44,7 @@ class TestOperationsEndpoint:
             headers=auth_headers
         )
         
-        assert response.status_code == 204
+        assert response.status_code == 202
         assert "X-Operation-ID" in response.headers
     
     def test_operations_process_no_auth(self, client: TestClient, sample_operation_data: dict):
@@ -100,7 +100,7 @@ class TestStepEndpoint:
             headers=auth_headers
         )
         
-        assert response.status_code == 204
+        assert response.status_code == 202
         assert "X-Operation-ID" in response.headers
     
     def test_step_call_no_auth(self, client: TestClient, sample_step_call_data: dict):
@@ -143,7 +143,7 @@ class TestExampleEndpoint:
             headers=auth_headers
         )
         
-        assert response.status_code == 204
+        assert response.status_code == 202
         assert "X-Operation-ID" in response.headers
     
     def test_example_process_text_no_auth(self, client: TestClient, sample_example_data: dict):
